@@ -1,11 +1,12 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route , Navigate} from 'react-router-dom'
 import { Guestlayout, Authlayout } from './pages/Layout'
 import HomePage from './pages/HomePage'
 import AuthPage from './pages/AuthPage'
 import BuilderPage from './pages/BuilderPage'
 import PreviewPage from './pages/PreviewPage'
 import PublishPage from './pages/PublishPage'
+  
 function App() {
   return (
     <Routes>
@@ -20,6 +21,10 @@ function App() {
         <Route path='/builder/:id' element={<BuilderPage />} />
         <Route path='/preview/:id' element={<PreviewPage />} />
       </Route>
+
+      {/*Catch all route*/}
+      <Route path='*' element={<Navigate to="/" replace/>} />
+
 
     </Routes>
 
