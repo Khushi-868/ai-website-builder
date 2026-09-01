@@ -1,8 +1,23 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
+import { useParams } from 'react-router-dom';
+import Loading from '../components/Loading';
+import api from '../api/api';
+import { useAppContext } from '../context/AppContext';
+import FullPagePreview from '../components/FullPagePreview';
 
 function PreviewPage() {
+  const {id} = useParams();
+ const {activeProject:project,loadingActiveproject:loading,loadProject} = useAppContext();
+  useEffect(() => {
+    if(id) 
+         loadProject(id);
+  }, [id]);
+  if(loading || !project) {
+    return <Loading/>
+  }
+ 
   return (
-    <div>PreviewPage</div>
+   <FullPagePreview files={project.files} />
   )
 }
 
