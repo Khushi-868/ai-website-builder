@@ -24,6 +24,8 @@ function App() {
         <Route path='/builder/:id' element={<BuilderPage />} />
         <Route path='/preview/:id' element={<PreviewPage />} />
       </Route>
+      {/* Public Routes */}
+      <Route path='/publish/:id' element={<PublishPage />} /> 
 
       {/*Catch all route*/}
       <Route path='*' element={<Navigate to="/" replace/>} />
