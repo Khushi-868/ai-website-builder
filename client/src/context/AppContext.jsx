@@ -247,7 +247,7 @@ const debouncedSave =React.useMemo(
 )
 useEffect(() => {
     return () => {
-        debouncedSave.cancel();
+        debouncedSave.flush();
     };
 }, [debouncedSave]);
 const updateProjectFiles=useCallback(
@@ -276,7 +276,7 @@ const updateProjectFiles=useCallback(
             handleDelete,
             loadProjects,
             logout,
-            chatLoading,
+           
             handleChat,
             updateProjectFiles,
         }}>
