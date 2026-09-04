@@ -38,11 +38,10 @@ const ProjectSchema = new Schema(
       default:"",
     },
     files: {
-      type: [Schema.Types.Mixed],
-      
-      default:{},
-      
+      type: Schema.Types.Mixed,
+      default: {},
     },
+
     
     messages: {
       type:[MessageSchema],

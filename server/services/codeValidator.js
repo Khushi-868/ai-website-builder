@@ -110,6 +110,21 @@ export function validateAndFixCode(code, filePath, context) {
         warnings.push(`${filePath}: Added missing React import`);
     }
 
+    // 10. Fix backslash-escaped single quotes in single-quoted JSX attributes 
+    // e.g., placeholder='I\'d like' -> placeholder="I'd like"
+    const escapedQuoteAttrRegex = /([a-zA-Z-]+)='([^'\\]*(?:\\.[^'\\]*)*)'/g;
+    if (escapedQuoteAttrRegex.test(code)) {
+        code = code.replace(escapedQuoteAttrRegex, (match, attr, val) => {
+            if (val.includes("\\'")) {
+                warnings.push(`${filePath}: Fixed escaped single quote in attribute '${attr}'`);
+                // Replace \' with ' and wrap the whole attribute in double quotes
+                // Also escape any existing double quotes in the value to be safe
+                return `${attr}="${val.replace(/\\'/g, "'").replace(/"/g, '&quot;')}"`;
+            }
+            return match;
+        });
+    }
+
     // 9. Fix import paths that point to incorrect folders/paths compared to what was planned
     if (context?.allPlannedFiles) {
         const fixResult = fixImportPaths(code, filePath, context.allPlannedFiles);
@@ -154,6 +169,18 @@ export function validateRevisionContent(content, filePath, op) {
             content = content.replace(new RegExp(`<${tag}(\\s[^>]*?)?(?<!/)>`, "gi"), (match, attrs) => `<${tag}${attrs || ""} />`);
             warnings.push(`${filePath}: Self-closed <${tag}> in replacement`);
         }
+    }
+
+    // Fix backslash-escaped single quotes in attributes
+    const escapedQuoteAttrRegex = /([a-zA-Z-]+)='([^'\\]*(?:\\.[^'\\]*)*)'/g;
+    if (escapedQuoteAttrRegex.test(content)) {
+        content = content.replace(escapedQuoteAttrRegex, (match, attr, val) => {
+            if (val.includes("\\'")) {
+                warnings.push(`${filePath}: Fixed escaped single quote in attribute '${attr}' in replacement`);
+                return `${attr}="${val.replace(/\\'/g, "'").replace(/"/g, '&quot;')}"`;
+            }
+            return match;
+        });
     }
 
     return { content, warnings };
