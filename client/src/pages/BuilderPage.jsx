@@ -40,7 +40,7 @@ const BuilderPage = () => {
   useEffect(() => {
     if (!id) return;
     loadProject(id);
-  }, [id]);
+  }, [id, loadProject]);
 
   // useEffect(() => {
   //   if (!id || !activeProject) return;

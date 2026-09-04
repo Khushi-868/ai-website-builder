@@ -1,7 +1,8 @@
 // POST/api/projects/:projectId/files
 //Create a new file project from an AI prompt
-import {Project} from '../models/Project.js';
+import { Project } from '../models/Project.js';
 import { generateProject } from '../services/ai.js';
+import { validateAndFixCode } from '../services/codeValidator.js';
 import crypto from 'crypto';
 function hashContent(content){
     return crypto.createHash('md5').update(content).digest('hex').slice(0,12);
@@ -83,25 +84,29 @@ async function runBackgroundGeneration(projectId, prompt) {
                 });
             },
             onFileStart: async (path) => {
-                   clg(`[Background AI] Starting generation of file ${path} for project ${projectId}`);
+                   console.log(`[Background AI] Starting generation of file ${path} for project ${projectId}`);
                    await Project.findByIdAndUpdate(
                           projectId,{
                             currentFile:path,
                           }
                    )
             },
-            onFileComplete: async(path,code)=>{
+            onFileComplete: async (path, code) => {
                 console.log(`[Background AI] Finished file ${path} for project ${projectId}`);
-                const project =await Project.findById(projectId);
-                if(project)
-                {
-                    project.files=project.files || {};
-                    project.files[path]={
-                        content:code,hash:hashContent(code)
+                
+                // Validate and fix code (e.g. self-closing tags, escaped quotes in JSX)
+                const validationResult = validateAndFixCode(code, path);
+                const finalCode = validationResult.code;
+
+                const project = await Project.findById(projectId);
+                if (project) {
+                    project.files = project.files || {};
+                    project.files[path] = {
+                        content: finalCode, hash: hashContent(finalCode)
                     };
-                    project.filesGenerated=[
-                        ...Project(project.filesGenerated || []),path
-                    ],
+                    project.filesGenerated = [
+                        ...(project.filesGenerated || []), path
+                    ];
                     project.messages.push({
                         role:"assistant",
                         content:`Create file "${path}`,
@@ -113,7 +118,7 @@ async function runBackgroundGeneration(projectId, prompt) {
                 }
             }
         });
-         console.log(`[Background AI] Finished file ${path} for project ${projectId}`);
+         console.log(`[Background AI] Finished file  for project ${projectId}`);
          const project=await Project.findById(projectId);
          if(project){
             project.status="completed";
@@ -138,7 +143,7 @@ async function runBackgroundGeneration(projectId, prompt) {
                 messages:{
                     role:"assistant",
                     content:`❌ Generation failed : ${err.message}`,
-                    timestamp:new Date();
+                    timestamp:new Date(),
                 }
             }
         })
@@ -242,9 +247,7 @@ export async function updateProjectFiles(req,res){
     await project.save();
     const filesObj={};
     for(const[path,entry] of Object.entries(project.files)){
-        if(typeof content === 'string'){
-        filesObj[path]=entry.content;
-        }
+         filesObj[path] = entry.content;
     }
     res.json({
            _id :project._id,

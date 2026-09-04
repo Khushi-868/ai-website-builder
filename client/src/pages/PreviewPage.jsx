@@ -7,7 +7,7 @@ import FullPagePreview from '../components/FullPagePreview';
 
 function PreviewPage() {
   const {id} = useParams();
- const {activeProject:project,loadingActiveproject:loading,loadProject} = useAppContext();
+ const {activeProject:project,loadingActiveProject:loading,loadProject} = useAppContext();
   useEffect(() => {
     if(id) 
          loadProject(id);

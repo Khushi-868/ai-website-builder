@@ -109,34 +109,31 @@ const loadProjects=async()=>{
     }
 }
 //Individual Project Actions
-const loadProject=async(id,silent=false)=>{
-    if(!user) return;
-    if(!silent) setLoadingActiveProject(true);
-    try{
-        const {data}=await api.get(`/api/projects/${id}`);
+const loadProject = useCallback(async (id, silent = false) => {
+    if (!user) return;
+    if (!silent) setLoadingActiveProject(true);
+    try {
+        const { data } = await api.get(`/api/projects/${id}`);
         setActiveProject(data);
         //Default file location
-        const files=Object.keys(data.files);
-        if(files.length>0) {
-            setActiveFile((prev)=>{
-                   if(files.includes(prev)) return prev;
-                   if(files.includes("/App.js")) return "/App.js";
-                   return files[0];
+        const files = Object.keys(data.files);
+        if (files.length > 0) {
+            setActiveFile((prev) => {
+                if (files.includes(prev)) return prev;
+                if (files.includes("/App.js")) return "/App.js";
+                return files[0];
             })
-        } 
-    }catch(error) {
+        }
+    } catch (error) {
         console.error("Failed to load project:", error);
-        if(!silent)
-        {
+        if (!silent) {
             toast.error("Failed to load Projects");
             navigate("/");
         }
-
-
-    }finally{
-        if(!silent) setLoadingActiveProject(false);
+    } finally {
+        if (!silent) setLoadingActiveProject(false);
     }
-}
+}, [user, navigate]);
 //Automatically poll active project status if generating or pending
 useEffect(()=>{
     if(!activeProject?._id||!user) return;

@@ -2,6 +2,7 @@ import React, {
     useState,
     useMemo,
     useRef,
+    useCallback,
     useEffect
 } from 'react'
 import {
@@ -18,63 +19,87 @@ import SandpackErrorMonitor from './SandpackErrorMonitor';
 
 //watches for file edits inside Sandpack editor and saves changes to DB & live state
 
-function SandpackFileWatcher({ onLiveFilesChange }) {
+function SandpackFileWatcher({ liveFiles, onLiveFilesChange }) {
     const { sandpack } = useSandpack();
     const { files } = sandpack;
 
-    const { activeProject, updateProjectFiles } = useAppContext();
+    const { updateProjectFiles } = useAppContext();
 
-    const activeProjectRef = useRef(activeProject);
+    // Use refs so callbacks never cause the effect to re-subscribe
+    const onLiveFilesChangeRef = useRef(onLiveFilesChange);
+    const updateProjectFilesRef = useRef(updateProjectFiles);
+    const liveFilesRef = useRef(liveFiles);
+
+    useEffect(() => { onLiveFilesChangeRef.current = onLiveFilesChange; }, [onLiveFilesChange]);
+    useEffect(() => { updateProjectFilesRef.current = updateProjectFiles; }, [updateProjectFiles]);
+    useEffect(() => { liveFilesRef.current = liveFiles; }, [liveFiles]);
+
+    // Stabilize the files dependency — `files` is a new object reference on every Sandpack render
+    const filesKey = useMemo(
+        () => Object.entries(files).map(([p, f]) => `${p}:${f.code}`).join('|'),
+        [files]
+    );
+
+    // Track whether this is the initial mount.
+    // On first mount Sandpack may briefly expose template defaults before
+    // hydrating with our custom files, so we skip that first run entirely.
+    const isFirstRun = useRef(true);
 
     useEffect(() => {
-        activeProjectRef.current = activeProject;
-    }, [activeProject]);
+        // Skip the very first invocation (Sandpack initial mount)
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
 
-    useEffect(() => {
-        const project = activeProjectRef.current;
-
-        if (!project) return;
+        // Compare Sandpack's current files against liveFiles (the last known
+        // good state). Any difference here means the USER typed in the editor.
+        const currentLiveFiles = liveFilesRef.current;
+        if (!currentLiveFiles) return;
 
         const updatedFiles = {};
         let hasChanges = false;
 
         for (const [path, fileObj] of Object.entries(files)) {
-            const fileCode = fileObj.code;
+            // Ignore Sandpack template-only files not in the project
+            if (!(path in currentLiveFiles)) continue;
 
+            const fileCode = fileObj.code;
             updatedFiles[path] = fileCode;
 
-            const originalContent =
-                typeof project.files[path] === "string"
-                    ? project.files[path]
-                    : project.files[path]?.content;
+            const prevCode =
+                typeof currentLiveFiles[path] === 'string'
+                    ? currentLiveFiles[path]
+                    : currentLiveFiles[path]?.content;
 
-            if (
-                originalContent !== undefined &&
-                originalContent !== fileCode
-            ) {
+            if (prevCode !== fileCode) {
                 hasChanges = true;
             }
         }
 
-        // Sync live files to parent
-        onLiveFilesChange(updatedFiles);
-
         if (hasChanges) {
-            updateProjectFiles(updatedFiles);
+            onLiveFilesChangeRef.current(updatedFiles);
+            updateProjectFilesRef.current(updatedFiles);
         }
-    }, [files]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filesKey]);
 
     return null;
 }
 function SandpackActiveFileSync({ activeFile }) {
     const { sandpack } = useSandpack();
+    // Use a ref so we don't add `sandpack` (new object every render) to deps
+    const sandpackRef = useRef(sandpack);
+    useEffect(() => {
+        sandpackRef.current = sandpack;
+    }, [sandpack]);
 
     useEffect(() => {
         if (!activeFile) return;
 
-        const files = sandpack.files;
+        const sp = sandpackRef.current;
+        const files = sp.files;
 
-        // Make sure the path matches the path stored in Sandpack
         let filePath = activeFile;
 
         if (!files[filePath]) {
@@ -88,8 +113,8 @@ function SandpackActiveFileSync({ activeFile }) {
             }
         }
 
-        sandpack.setActiveFile(filePath);
-    }, [activeFile, sandpack]);
+        sp.setActiveFile(filePath);
+    }, [activeFile]);
 
     return null;
 }
@@ -148,7 +173,7 @@ const PreviewPanel = ({ project, activeFile, showCode }) => {
 
     return (
         <div className="h-full w-full">
-            <SandpackProvider key={project._id} template='react'
+            <SandpackProvider key={`${project._id}-${project.version}`} template='react'
                 files={sandpackFiles}
                 customSetup={{ dependencies }}
                 options={{
@@ -187,7 +212,7 @@ const PreviewPanel = ({ project, activeFile, showCode }) => {
                 }}
             >
                 <SandpackActiveFileSync activeFile={activeFile} />
-                <SandpackFileWatcher onLiveFilesChange={handleLiveFilesChange} />
+                <SandpackFileWatcher liveFiles={liveFiles} onLiveFilesChange={handleLiveFilesChange} />
                 <SandpackErrorMonitor
                     onErrorChange={setShowErrorOverlay}
                 />
