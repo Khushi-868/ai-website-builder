@@ -55,7 +55,7 @@ function TreeItem({ node, activeFile, onFileSelect, depth = 0 }) {
             >
                 <FolderOpenIcon
                     size={14}
-                    className="text-zinc-800 opacity-60"
+                    className="text-indigo-400 opacity-60"
                 />
                 <span>{node.name}</span>
             </div>
@@ -77,8 +77,8 @@ return (
         onClick={() => onFileSelect(node.path)}
         className={`w-full flex items-center gap-2 py-1.5 px-2 text-xs transition-colors rounded-md mx-0 ${
             isActive
-                ? "bg-zinc-100 text-zinc-950 font-medium"
-                : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900"
+                ? "bg-indigo-500/15 text-white font-medium"
+                : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200"
         }`}
         style={{ paddingLeft: `${depth * 12 + 8}px` }}
     >

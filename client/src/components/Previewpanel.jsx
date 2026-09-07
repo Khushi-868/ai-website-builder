@@ -191,16 +191,16 @@ const PreviewPanel = ({ project, activeFile, showCode }) => {
 
                 theme={{
                     colors: {
-                        surface1: "#ffffff",
-                        surface2: "#f4f4f5",
-                        surface3: "#e4e4e7",
-                        clickable: "#71717a",
-                        base: "#09090b",
-                        disabled: "#a1a1aa",
-                        hover: "#18181b",
-                        accent: "#18181b",
+                        surface1: "#0c1222",
+                        surface2: "#131b2e",
+                        surface3: "#1e293b",
+                        clickable: "#94a3b8",
+                        base: "#f8fafc",
+                        disabled: "#475569",
+                        hover: "#ffffff",
+                        accent: "#818cf8",
                         error: "#ef4444",
-                        errorSurface: "#fef2f2",
+                        errorSurface: "#7f1d1d",
                     },
                     font: {
                         body: "'Urbanist',system-ui,-apple-system,sans-serif",
