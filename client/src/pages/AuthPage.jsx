@@ -95,7 +95,7 @@ const AuthPage = ({ mode }) => {
                                     Password
                                 </label>
                                 {isLogin && (
-                                    <Link to="/forgot-password" className="text-[11px] font-medium text-blue-600 hover:text-blue-700">
+                                    <Link to="/forgot-password" className="text-[11px] font-medium text-indigo-500 hover:text-indigo-600">
                                         Forgot?
                                     </Link>
                                 )}
@@ -122,7 +122,7 @@ const AuthPage = ({ mode }) => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className='w-full py-2.5 bg-linear-to-br from-red-600 to-amber-600 text-white font-semibold hover:scale-102 disabled:opacity-40 flex items-center justify-center cursor-pointer mt-2 rounded-lg transition-all'
+                            className='w-full py-2.5 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white font-semibold hover:scale-102 disabled:opacity-40 flex items-center justify-center cursor-pointer mt-2 rounded-lg transition-all shadow-lg shadow-indigo-500/25'
                         >
                             {loading && <Loader2Icon className="animate-spin h-3.5 w-3.5 mr-2" />}
                             {isLogin ? "Sign in" : "Sign up"}

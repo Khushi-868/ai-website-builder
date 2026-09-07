@@ -9,7 +9,7 @@ const LoginLeft = () => {
             </div>
             <div>
                 <h2 className="text-3xl text-white font-medium leading-snug mb-3 tracking-tight"> Build your AI-powered applications</h2>
-                <p className="text-zinc-300">
+                <p className="text-white">
                     Describe your idea, and our AI will generate the code for you. Save time and effort with our intelligent code generation platform.
                 </p>
                 <p> Copyright {new Date().getFullYear()} Builder AI. All rights reserved.</p>

@@ -24,8 +24,8 @@ body {
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: #d4d4d8; }
+::-webkit-scrollbar-thumb { background: #4a5280; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #6366f1; }
 
 
 
@@ -40,7 +40,7 @@ body {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #18181b;
+  background: #6366f1;
   opacity: 0.8;
 }
 

@@ -98,7 +98,7 @@ const BuilderPage = () => {
   }
 
   return (
-    <div className='h-screen flex flex-col bg-white overflow-hidden '>
+    <div className='h-screen flex flex-col bg-[#0f172a] overflow-hidden text-white'>
       {/* Top Bar Header */}
       <BuilderHeader
         projectName={activeProject.name}
@@ -117,15 +117,15 @@ const BuilderPage = () => {
       <div className="flex-1 flex overflow-hidden">
 
         {/* Left Sidebar */}
-        <div className="w-[320px] shrink-0 flex flex-col border-r border-zinc-200 bg-white">
+        <div className="w-[320px] shrink-0 flex flex-col border-r border-white/10 bg-[#0c1222]">
 
           {/* Sidebar Tabs */}
-          <div className="flex border-b border-zinc-100">
+          <div className="flex border-b border-white/10">
             <button
               onClick={() => setLeftTab("chat")}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium cursor-pointer ${leftTab === "chat"
-                ? "text-zinc-900 border-b-2 border-zinc-900"
-                : "text-zinc-400 hover:text-zinc-700"
+                ? "text-white border-b-2 border-indigo-500"
+                : "text-zinc-400 hover:text-zinc-200"
                 }`}
             >
               <MessageSquareIcon size={13} /> Chat
@@ -133,8 +133,8 @@ const BuilderPage = () => {
             <button
               onClick={() => setLeftTab("files")}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium cursor-pointer ${leftTab === "files"
-                ? "text-zinc-900 border-b-2 border-zinc-900"
-                : "text-zinc-400 hover:text-zinc-700"
+                ? "text-white border-b-2 border-indigo-500"
+                : "text-zinc-400 hover:text-zinc-200"
                 }`}
             >
               <FolderTreeIcon size={13} /> Files

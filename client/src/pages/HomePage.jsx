@@ -50,7 +50,7 @@ const HomePage = () => {
                 <div className="w-full max-w-2xl flex flex-col items-center">
                     {/* Promo Badge */}
                     <div className="flex items-center gap-2 p-1.5 pr-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-[13px] text-white/90">
-                        <span className='px-3 py-1 text-[11px] bg-red-700 rounded-full font-medium tracking-wider '>PROMO</span>
+                        <span className='px-3 py-1 text-[11px] bg-indigo-600 rounded-full font-medium tracking-wider '>PROMO</span>
                         <span>Create your first project for free.</span>
                     </div>
                     {/* {Title and Description */}
